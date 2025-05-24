@@ -32,45 +32,41 @@ const calcTotalPoint = (arr: number[], counter: number) => {
   return total + counter;
 };
 
-const sum1 = (n: number): number => {
-  if (n !== 0) {
-    return n + sum1(n - 1);
-  } else {
-    return n;
-  }
-};
-console.log(sum1(10));
-
-const sum2 = (n: number, m: number): number => {
-  return n === m ? n : n + sum2(n + 1, m);
-};
-console.log(sum2(3, 10));
-
-const sum3 = (n: number, m: number): number => {
-  return ((m - n + 1) * (n + m)) / 2;
-};
-console.log(sum3(3, 10));
-
 export default function Home() {
-  const [sampleCounter, setSampleCounter] = useState<number>(0);
+  const [setBom, bomMap] = useState<number>(0);
+  // const [setsize, width] = useState<number>(3);
   const [samplePoint, setSamplePoint] = useState<number[]>([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
-  const [setClick, clickBoard] = useState<number[][]>();
+  const [setClickB, clickBoard] = useState<number[][]>([
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]);
 
-  const clickHandler = () => {
-    const newSanplePoint: number[] = structuredClone(samplePoint);
-    newSanplePoint[sampleCounter] += 1;
-    setSamplePoint(newSanplePoint);
-    setSampleCounter((sampleCounter + 1) % 14);
-    const totalPoint = calcTotalPoint(samplePoint, sampleCounter);
-    console.log(totalPoint);
+  const width = 4;
+
+  const calcBoard = [[0, 0, 1, 0]];
+
+  const clickHandler = (x: number, y: number) => {
+    // setSampleCounter((sampleCounter + 1) % 14);
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.block} style={{ backgroundPosition: `${sampleCounter * -30}px` }} />
-      <button onClick={clickHandler}>律</button>
+      <div className={styles.back} style={{ width: `${30 * width}px` }}>
+        {calcBoard.map((row, y) =>
+          row.map((state, x) => (
+            <div
+              className={styles.block}
+              key={`${x}-${y}`}
+              onClick={() => clickHandler(x, y)}
+              style={{ backgroundPosition: `${-30 * state}px` }}
+            />
+          )),
+        )}
+      </div>
     </div>
   );
 }

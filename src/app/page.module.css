@@ -8,6 +8,12 @@
   padding: 0 0.5rem;
 }
 
+.back {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #888;
+}
+
 .block {
   width: 30px;
   height: 30px;
