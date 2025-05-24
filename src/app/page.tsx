@@ -27,17 +27,30 @@ const createBoard = (hight: number, width: number): number[][] => {
   return board;
 };
 
-const calcTotalPoint = (arr: number[], counter: number) => {
-  const total = arr.reduce((accumulator, currentValue) => accumulator + currentValue);
-  return total + counter;
+//12=smile,13=cool,14=miss
+
+//二つのボードを統合
+const calcBoard = (cBoard: number[][], bBoard: number[][]): number[][] => {
+  const board: number[][] = [];
+  for (let y = 0; y < cBoard.length; y++) {
+    const row = [];
+    for (let x = 0; x < cBoard[y].length; x++) {
+      row.push(cBoard[y][x] === 9 || cBoard[y][x] === 10 ? cBoard[y][x] : bBoard[y][x]);
+    }
+    board.push(row);
+  }
+  return board;
 };
 
 export default function Home() {
-  const [setBom, bomMap] = useState<number>(0);
-  // const [setsize, width] = useState<number>(3);
-  const [samplePoint, setSamplePoint] = useState<number[]>([
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  //1~8=number,11=bom,
+  const [setBom, bomMap] = useState<number[][]>([
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
   ]);
+  // 9=?,10=flag
   const [setClickB, clickBoard] = useState<number[][]>([
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -50,7 +63,7 @@ export default function Home() {
   const calcBoard = [[0, 0, 1, 0]];
 
   const clickHandler = (x: number, y: number) => {
-    // setSampleCounter((sampleCounter + 1) % 14);
+    const newCB = structuredClone(clickBoard);
   };
 
   return (
@@ -62,7 +75,7 @@ export default function Home() {
               className={styles.block}
               key={`${x}-${y}`}
               onClick={() => clickHandler(x, y)}
-              style={{ backgroundPosition: `${-30 * state}px` }}
+              style={{ backgroundPosition: `${-30 * (state - 1)}px` }}
             />
           )),
         )}
