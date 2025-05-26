@@ -69,7 +69,7 @@ const integBoard = (cBoard: number[][], bomMap: number[][]): number[][] => {
   for (let y = 0; y < cBoard.length; y++) {
     const row = [];
     for (let x = 0; x < cBoard[y].length; x++) {
-      row.push(cBoard[y][x] === 0 ? -1 : incNum[y][x]);
+      row.push(cBoard[y][x] === 0 ? -1 : bomMap[y][x] === 1 ? 11 : incNum[y][x]);
     }
     board.push(row);
   }
