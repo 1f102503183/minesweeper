@@ -62,8 +62,6 @@ const serch = (bomMap: number[][]): number[][] => {
       }
     }
   }
-  console.log(bomMap.length);
-  console.log(incNumber);
   return incNumber;
 };
 
@@ -73,6 +71,9 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
   for (let y = 0; y < cBoard.length; y++) {
     for (let x = 0; x < cBoard[y].length; x++) {
       if (cBoard[y][x] === 1) {
+        if (incNum[y][x] === 11) {
+          gameover(board);
+        }
         openZero(cBoard, incNum, board, y, x);
         board[y][x] = incNum[y][x];
       }
@@ -112,6 +113,14 @@ const openZero = (
   }
 };
 
+// ゲームオーバー
+const gameover = (board: number[][]): number[][] => {
+  for (let i = 0; i < board.length; i++) {
+    board[i].fill(0);
+  }
+  return board;
+};
+
 //ボムを配置
 const putBom = (Map: number[][], y: number, x: number): number[][] => {
   const a = Math.floor(Math.random() * 9);
@@ -144,10 +153,13 @@ export default function Home() {
     clickBoard[y][x] = 1;
     setuser(clickBoard);
   };
+  const riteClick = (x: number, y: number, evt: React.MouseEvent) => {
+    console.log('right');
+  };
 
   return (
     <div className={styles.container}>
-      <div className={styles.face} style={{ backgroundPosition: `${-45 * 1}px` }} />
+      <div className={styles.face} style={{ backgroundPosition: `${-30 * 1}px` }} />
       <div className={styles.back} style={{ width: `${30 * width}px` }}>
         {calcBoard.map((row, y) =>
           row.map((state, x) => (
@@ -155,6 +167,10 @@ export default function Home() {
               className={styles.block}
               key={`${x}-${y}`}
               onClick={() => clickHandler(x, y)}
+              onContextMenu={(evt) => {
+                evt.preventDefault();
+                riteClick(x, y, evt);
+              }}
               style={{ backgroundPosition: `${-30 * (state - 1)}px` }}
             >
               {state === -1 && <div className={styles.cover} />}
