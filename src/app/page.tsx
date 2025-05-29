@@ -70,7 +70,7 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
   const board: number[][] = cBoard.map((row) => row.map(() => -1));
   for (let y = 0; y < cBoard.length; y++) {
     for (let x = 0; x < cBoard[y].length; x++) {
-      if (cBoard[y][x] === 1) {
+      if (cBoard[y][x] !== 0) {
         if (incNum[y][x] === 11) {
           gameover(board);
         }
@@ -83,6 +83,9 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
     for (let x = 0; x < cBoard[y].length; x++) {
       if (board[y][x] !== -1) {
         board[y][x] = incNum[y][x];
+      }
+      if (cBoard[y][x] === 2) {
+        board[y][x] = 10;
       }
     }
   }
@@ -112,7 +115,6 @@ const openZero = (
     }
   }
 };
-
 // ゲームオーバー
 const gameover = (board: number[][]): number[][] => {
   for (let i = 0; i < board.length; i++) {
@@ -120,7 +122,6 @@ const gameover = (board: number[][]): number[][] => {
   }
   return board;
 };
-
 //ボムを配置
 const putBom = (Map: number[][], y: number, x: number): number[][] => {
   const a = Math.floor(Math.random() * 9);
@@ -154,6 +155,8 @@ export default function Home() {
     setuser(clickBoard);
   };
   const riteClick = (x: number, y: number, evt: React.MouseEvent) => {
+    evt.preventDefault();
+    clickBoard[y][x] = 2;
     console.log('right');
   };
 
@@ -168,7 +171,6 @@ export default function Home() {
               key={`${x}-${y}`}
               onClick={() => clickHandler(x, y)}
               onContextMenu={(evt) => {
-                evt.preventDefault();
                 riteClick(x, y, evt);
               }}
               style={{ backgroundPosition: `${-30 * (state - 1)}px` }}
