@@ -14,14 +14,6 @@ const directions = [
   [1, 1],
 ] as const;
 
-//難易度に応じたサイズを返す
-// const dif = (def: string): number => {
-//   const size = 0;
-//   if (def === '初級') {
-//   }
-//   return size;
-// };
-
 // hight*widthの二次元配列を作る
 const createBoard = (hight: number, width: number): number[][] => {
   const board: number[][] = [];
@@ -71,9 +63,6 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
   for (let y = 0; y < cBoard.length; y++) {
     for (let x = 0; x < cBoard[y].length; x++) {
       if (cBoard[y][x] === 1) {
-        if (incNum[y][x] === 11) {
-          gameover(board);
-        }
         openZero(cBoard, incNum, board, y, x);
         board[y][x] = incNum[y][x];
       }
@@ -118,7 +107,7 @@ const openZero = (
 // ゲームオーバー
 const gameover = (board: number[][]): number[][] => {
   for (let i = 0; i < board.length; i++) {
-    board[i].fill(0);
+    board[i].fill(1);
   }
   return board;
 };
@@ -135,26 +124,44 @@ const putBom = (Map: number[][], y: number, x: number): number[][] => {
   return putBom(Map, y, x);
 };
 
+const counter = (bord: number[][], item: number): number => {
+  return bord.flat().filter((i) => i === item).length;
+};
+
 export default function Home() {
-  //1~8=number,11=bom, 9=?,10=flag
-  const [first, setfirst] = useState(true);
+  // 1~8=number,11=bom, 9=?,10=flag
   const [userInput, setuser] = useState<number[][]>(createBoard(9, 9));
   const [bomMap, setBom] = useState<number[][]>(createBoard(9, 9));
+  const [time, setTime] = useState<number>(0);
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     timer();
+  //   }, 1000);
+  // }, []);
 
   const clickBoard: number[][] = structuredClone(userInput);
 
   const calcBoard = integBoard(clickBoard, serch(bomMap));
 
+  const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
+
+  // const timer = () => {
+  //   setTime(time + 1);
+  // };
+
   const clickHandler = (x: number, y: number) => {
-    if (first) {
+    if (counter(bomMap, 1) === 0) {
       setBom(putBom(userInput, y, x));
-      setfirst(false);
     }
     clickBoard[y][x] = 1;
+    if (bomMap[y][x] === 1) {
+      gameover(clickBoard);
+    }
     setuser(clickBoard);
   };
+  console.log(clickBoard);
   const riteClick = (x: number, y: number) => {
-    if (clickBoard[y][x] !== 1) {
+    if (calcBoard[y][x] === -1 || calcBoard[y][x] === 9 || calcBoard[y][x] === 10) {
       clickBoard[y][x] = (clickBoard[y][x] - 1) % 3;
       setuser(clickBoard);
     }
@@ -162,7 +169,8 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.face} style={{ backgroundPosition: `${-30 * 1}px` }} />
+      <div className={styles.time}>{time}</div>
+      <div className={styles.face} style={{ backgroundPosition: `${-30 * (face - 1)}px` }} />
       <div
         className={styles.back}
         style={{ height: `${userInput.length * 30}px`, width: `${userInput.length * 30}px` }}
