@@ -70,7 +70,7 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
   const board: number[][] = cBoard.map((row) => row.map(() => -1));
   for (let y = 0; y < cBoard.length; y++) {
     for (let x = 0; x < cBoard[y].length; x++) {
-      if (cBoard[y][x] !== 0) {
+      if (cBoard[y][x] === 1) {
         if (incNum[y][x] === 11) {
           gameover(board);
         }
@@ -144,7 +144,6 @@ export default function Home() {
   const clickBoard: number[][] = structuredClone(userInput);
 
   const calcBoard = integBoard(clickBoard, serch(bomMap));
-  const width = calcBoard.length;
 
   const clickHandler = (x: number, y: number) => {
     if (first) {
@@ -154,28 +153,38 @@ export default function Home() {
     clickBoard[y][x] = 1;
     setuser(clickBoard);
   };
-  const riteClick = (x: number, y: number, evt: React.MouseEvent) => {
-    evt.preventDefault();
-    clickBoard[y][x] = 2;
-    console.log('right');
+  const riteClick = (x: number, y: number) => {
+    if (clickBoard[y][x] === 0) {
+      clickBoard[y][x] = 2;
+      setuser(clickBoard);
+    }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.face} style={{ backgroundPosition: `${-30 * 1}px` }} />
-      <div className={styles.back} style={{ width: `${30 * width}px` }}>
+      <div
+        className={styles.back}
+        style={{ height: `${userInput.length * 30}px`, width: `${userInput.length * 30}px` }}
+      >
         {calcBoard.map((row, y) =>
           row.map((state, x) => (
             <div
-              className={styles.block}
+              className={styles.cover}
               key={`${x}-${y}`}
               onClick={() => clickHandler(x, y)}
               onContextMenu={(evt) => {
-                riteClick(x, y, evt);
+                evt.preventDefault();
+                riteClick(x, y);
               }}
-              style={{ backgroundPosition: `${-30 * (state - 1)}px` }}
             >
-              {state === -1 && <div className={styles.cover} />}
+              {state !== -1 && (
+                <div
+                  className={styles.block}
+                  key={`${x}-${y}`}
+                  style={{ backgroundPosition: `${-30 * (state - 1)}px` }}
+                />
+              )}
             </div>
           )),
         )}
