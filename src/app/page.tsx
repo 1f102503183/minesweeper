@@ -84,8 +84,8 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
       if (board[y][x] !== -1) {
         board[y][x] = incNum[y][x];
       }
-      if (cBoard[y][x] === 2) {
-        board[y][x] = 10;
+      if (cBoard[y][x] === -1 || cBoard[y][x] === -2) {
+        board[y][x] = 11 + cBoard[y][x];
       }
     }
   }
@@ -154,8 +154,8 @@ export default function Home() {
     setuser(clickBoard);
   };
   const riteClick = (x: number, y: number) => {
-    if (clickBoard[y][x] === 0) {
-      clickBoard[y][x] = 2;
+    if (clickBoard[y][x] !== 1) {
+      clickBoard[y][x] = (clickBoard[y][x] - 1) % 3;
       setuser(clickBoard);
     }
   };
@@ -192,3 +192,5 @@ export default function Home() {
     </div>
   );
 }
+
+// outset
