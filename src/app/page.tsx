@@ -14,6 +14,21 @@ const directions = [
   [1, 1],
 ] as const;
 
+type size = '初級' | '中級' | '上級';
+
+interface level {
+  size: size;
+  height: number;
+  width: number;
+  bomNumber: number;
+}
+
+const difficult: level[] = [
+  { size: '初級', height: 9, width: 9, bomNumber: 10 },
+  { size: '中級', height: 16, width: 16, bomNumber: 40 },
+  { size: '上級', height: 16, width: 30, bomNumber: 99 },
+];
+
 // hight*widthの二次元配列を作る
 const createBoard = (hight: number, width: number): number[][] => {
   const board: number[][] = [];
@@ -104,6 +119,7 @@ const openZero = (
     }
   }
 };
+
 // ゲームオーバー
 const gameover = (board: number[][]): number[][] => {
   for (let i = 0; i < board.length; i++) {
@@ -112,16 +128,16 @@ const gameover = (board: number[][]): number[][] => {
   return board;
 };
 //ボムを配置
-const putBom = (Map: number[][], y: number, x: number): number[][] => {
+const putBom = (Map: number[][], y: number, x: number, bomnumber: number): number[][] => {
   const a = Math.floor(Math.random() * 9);
   const b = Math.floor(Math.random() * 9);
-  if (Map.flat().filter((i) => i === 1).length === 10) {
+  if (counter(Map, 1) === bomnumber) {
     return Map;
   }
   if (Map[a][b] !== 1 && a !== y && b !== x) {
     Map[a][b] = 1;
   }
-  return putBom(Map, y, x);
+  return putBom(Map, y, x, bomnumber);
 };
 
 const counter = (bord: number[][], item: number): number => {
@@ -130,8 +146,13 @@ const counter = (bord: number[][], item: number): number => {
 
 export default function Home() {
   // 1~8=number,11=bom, 9=?,10=flag
-  const [userInput, setuser] = useState<number[][]>(createBoard(9, 9));
-  const [bomMap, setBom] = useState<number[][]>(createBoard(9, 9));
+  const [level, setLevel] = useState<number>(0);
+  const [userInput, setuser] = useState<number[][]>(
+    createBoard(difficult[0].width, difficult[level].height),
+  );
+  const [bomMap, setBom] = useState<number[][]>(
+    createBoard(difficult[0].width, difficult[level].height),
+  );
   const [time, setTime] = useState<number>(0);
   // useEffect(() => {
   //   setInterval(() => {
@@ -151,7 +172,7 @@ export default function Home() {
 
   const clickHandler = (x: number, y: number) => {
     if (counter(bomMap, 1) === 0) {
-      setBom(putBom(userInput, y, x));
+      setBom(putBom(userInput, y, x, difficult[level].bomNumber));
     }
     clickBoard[y][x] = 1;
     if (bomMap[y][x] === 1) {
