@@ -31,7 +31,7 @@
   width: 30px;
   height: 30px;
   background-color: #888;
-  border: 3px solid #000;
+  border: 3px outset #000;
 }
 
 .block {

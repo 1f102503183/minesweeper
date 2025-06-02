@@ -14,27 +14,25 @@ const directions = [
   [1, 1],
 ] as const;
 
-type size = '初級' | '中級' | '上級';
-
 interface level {
-  size: size;
   height: number;
   width: number;
   bomNumber: number;
 }
 
-const difficult: level[] = [
-  { size: '初級', height: 9, width: 9, bomNumber: 10 },
-  { size: '中級', height: 16, width: 16, bomNumber: 40 },
-  { size: '上級', height: 16, width: 30, bomNumber: 99 },
-];
+//オブジェクト
+const difficult: { [key: string]: level } = {
+  初級: { height: 9, width: 9, bomNumber: 10 },
+  中級: { height: 16, width: 16, bomNumber: 40 },
+  上級: { height: 16, width: 30, bomNumber: 99 },
+};
 
 // hight*widthの二次元配列を作る
-const createBoard = (hight: number, width: number): number[][] => {
+const createBoard = (def: level): number[][] => {
   const board: number[][] = [];
-  for (let y = 0; y < hight; y++) {
+  for (let y = 0; y < def.height; y++) {
     const row = [];
-    for (let x = 0; x < width; x++) {
+    for (let x = 0; x < def.width; x++) {
       row.push(0);
     }
     board.push(row);
@@ -129,8 +127,8 @@ const gameover = (board: number[][]): number[][] => {
 };
 //ボムを配置
 const putBom = (Map: number[][], y: number, x: number, bomnumber: number): number[][] => {
-  const a = Math.floor(Math.random() * 9);
-  const b = Math.floor(Math.random() * 9);
+  const a = Math.floor(Math.random() * Map.length);
+  const b = Math.floor(Math.random() * Map[0].length);
   if (counter(Map, 1) === bomnumber) {
     return Map;
   }
@@ -146,19 +144,9 @@ const counter = (bord: number[][], item: number): number => {
 
 export default function Home() {
   // 1~8=number,11=bom, 9=?,10=flag
-  const [level, setLevel] = useState<number>(0);
-  const [userInput, setuser] = useState<number[][]>(
-    createBoard(difficult[0].width, difficult[level].height),
-  );
-  const [bomMap, setBom] = useState<number[][]>(
-    createBoard(difficult[0].width, difficult[level].height),
-  );
-  const [time, setTime] = useState<number>(0);
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     timer();
-  //   }, 1000);
-  // }, []);
+  const [level, setLevel] = useState<string>('初級');
+  const [userInput, setuser] = useState<number[][]>(createBoard(difficult[level]));
+  const [bomMap, setBom] = useState<number[][]>(createBoard(difficult[level]));
 
   const clickBoard: number[][] = structuredClone(userInput);
 
@@ -169,6 +157,14 @@ export default function Home() {
   // const timer = () => {
   //   setTime(time + 1);
   // };
+
+  const setLev = (n: string) => {
+    setLevel(n);
+  };
+  if (calcBoard[0].length !== createBoard(difficult[level])[0].length) {
+    setBom(createBoard(difficult[level]));
+    setuser(createBoard(difficult[level]));
+  }
 
   const clickHandler = (x: number, y: number) => {
     if (counter(bomMap, 1) === 0) {
@@ -190,11 +186,17 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.time}>{time}</div>
-      <div className={styles.face} style={{ backgroundPosition: `${-30 * (face - 1)}px` }} />
+      <button onClick={() => setLev('初級')}>初級</button>
+      <button onClick={() => setLev('中級')}>中級</button>
+      <button onClick={() => setLev('上級')}>上級</button>
+      <div
+        className={styles.face}
+        style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
+        // onClick={() => setLev(level)}
+      />
       <div
         className={styles.back}
-        style={{ height: `${userInput.length * 30}px`, width: `${userInput.length * 30}px` }}
+        style={{ height: `${userInput.length * 30}px`, width: `${userInput[0].length * 30}px` }}
       >
         {calcBoard.map((row, y) =>
           row.map((state, x) => (
