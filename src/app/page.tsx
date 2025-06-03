@@ -25,6 +25,7 @@ const difficult: { [key: string]: level } = {
   初級: { height: 9, width: 9, bomNumber: 10 },
   中級: { height: 16, width: 16, bomNumber: 40 },
   上級: { height: 16, width: 30, bomNumber: 99 },
+  カスタム: { height: 2, width: 2, bomNumber: 2 },
 };
 
 // hight*widthの二次元配列を作る
@@ -166,6 +167,8 @@ export default function Home() {
     setuser(createBoard(difficult[level]));
   }
 
+  // const custom = (event: React.ChangeEvent<HTMLInputElement>) => {};
+
   const clickHandler = (x: number, y: number) => {
     if (counter(bomMap, 1) === 0) {
       setBom(putBom(userInput, y, x, difficult[level].bomNumber));
@@ -194,6 +197,12 @@ export default function Home() {
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
         // onClick={() => setLev(level)}
       />
+      <label htmlFor="number">高さ：</label>
+      {/* <input type="number" id="heightInput" value={height} onChange={custom(height)} /> */}
+      <label htmlFor="number">幅：</label>
+      <input type="number" id="heightInput" />
+      <label htmlFor="number">爆弾数：</label>
+      <input type="number" id="heightInput" />
       <div
         className={styles.back}
         style={{ height: `${userInput.length * 30}px`, width: `${userInput[0].length * 30}px` }}
