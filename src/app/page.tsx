@@ -155,9 +155,7 @@ export default function Home() {
 
   const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
 
-  // const timer = () => {
-  //   setTime(time + 1);
-  // };
+  const custmSize: level = { height: 0, width: 0, bomNumber: 0 };
 
   const setLev = (n: string) => {
     setLevel(n);
@@ -167,7 +165,9 @@ export default function Home() {
     setuser(createBoard(difficult[level]));
   }
 
-  // const custom = (event: React.ChangeEvent<HTMLInputElement>) => {};
+  const custom = (i: level) => {
+    console.log(i.height);
+  };
 
   const clickHandler = (x: number, y: number) => {
     if (counter(bomMap, 1) === 0) {
@@ -197,12 +197,13 @@ export default function Home() {
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
         // onClick={() => setLev(level)}
       />
-      <label htmlFor="number">高さ：</label>
-      {/* <input type="number" id="heightInput" value={height} onChange={custom(height)} /> */}
-      <label htmlFor="number">幅：</label>
-      <input type="number" id="heightInput" />
-      <label htmlFor="number">爆弾数：</label>
-      <input type="number" id="heightInput" />
+      <select id="levelSelect" value={level}>
+        <option value="初級">初級</option>
+        <option value="中級">中級</option>
+        <option value="上級">上級</option>
+        <option value="カスタム">カスタム</option>
+      </select>
+
       <div
         className={styles.back}
         style={{ height: `${userInput.length * 30}px`, width: `${userInput[0].length * 30}px` }}
