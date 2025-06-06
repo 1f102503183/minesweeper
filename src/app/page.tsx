@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 const directions = [
@@ -20,12 +21,11 @@ interface level {
   bomNumber: number;
 }
 
-//オブジェクト
 const difficult: { [key: string]: level } = {
-  初級: { height: 9, width: 9, bomNumber: 10 },
-  中級: { height: 16, width: 16, bomNumber: 40 },
-  上級: { height: 16, width: 30, bomNumber: 99 },
-  カスタム: { height: 2, width: 2, bomNumber: 2 },
+  easy: { height: 9, width: 9, bomNumber: 10 },
+  normal: { height: 16, width: 16, bomNumber: 40 },
+  hard: { height: 16, width: 30, bomNumber: 99 },
+  custom: { height: 2, width: 2, bomNumber: 2 },
 };
 
 // hight*widthの二次元配列を作る
@@ -145,9 +145,25 @@ const counter = (bord: number[][], item: number): number => {
 
 export default function Home() {
   // 1~8=number,11=bom, 9=?,10=flag
-  const [level, setLevel] = useState<string>('初級');
+  const [level, setLevel] = useState<string>('easy');
   const [userInput, setuser] = useState<number[][]>(createBoard(difficult[level]));
   const [bomMap, setBom] = useState<number[][]>(createBoard(difficult[level]));
+  const [time, setTime] = useState<number>(0);
+
+  const timer = useCallback(() => {
+    setTime((prevTime) => prevTime + 1); // 関数形式のsetStateを使用
+  }, []);
+
+  //timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      timer();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timer]);
 
   const clickBoard: number[][] = structuredClone(userInput);
 
@@ -155,18 +171,17 @@ export default function Home() {
 
   const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
 
-  const custmSize: level = { height: 0, width: 0, bomNumber: 0 };
-
-  const setLev = (n: string) => {
-    setLevel(n);
+  const setLev = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setLevel(event.target.value);
   };
+
   if (calcBoard[0].length !== createBoard(difficult[level])[0].length) {
     setBom(createBoard(difficult[level]));
     setuser(createBoard(difficult[level]));
   }
 
-  const custom = (i: level) => {
-    console.log(i.height);
+  const setCustomWidth = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value);
   };
 
   const clickHandler = (x: number, y: number) => {
@@ -189,21 +204,29 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <button onClick={() => setLev('初級')}>初級</button>
-      <button onClick={() => setLev('中級')}>中級</button>
-      <button onClick={() => setLev('上級')}>上級</button>
+      <div className="timer">{time}</div>
       <div
         className={styles.face}
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
         // onClick={() => setLev(level)}
       />
-      <select id="levelSelect" value={level}>
-        <option value="初級">初級</option>
-        <option value="中級">中級</option>
-        <option value="上級">上級</option>
-        <option value="カスタム">カスタム</option>
+      <select id="levelSelect" value={level} onChange={setLev}>
+        <option value="easy">初級</option>
+        <option value="normal">中級</option>
+        <option value="hard">上級</option>
+        <option value="custom">カスタム</option>
       </select>
-
+      {level === 'custom' && (
+        <div>
+          <label htmlFor="setCustom">幅</label>
+          <input
+            id="setCustom"
+            type="number"
+            value={difficult.custom.width}
+            onChange={setCustomWidth}
+          />
+        </div>
+      )}
       <div
         className={styles.back}
         style={{ height: `${userInput.length * 30}px`, width: `${userInput[0].length * 30}px` }}
