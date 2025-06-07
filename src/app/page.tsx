@@ -1,7 +1,7 @@
 'use client';
 
 import type { ChangeEvent } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from './page.module.css';
 
 const directions = [
@@ -25,7 +25,7 @@ const difficult: { [key: string]: level } = {
   easy: { height: 9, width: 9, bomNumber: 10 },
   normal: { height: 16, width: 16, bomNumber: 40 },
   hard: { height: 16, width: 30, bomNumber: 99 },
-  custom: { height: 2, width: 2, bomNumber: 2 },
+  custom: { height: 10, width: 10, bomNumber: 15 },
 };
 
 // hight*widthの二次元配列を作る
@@ -148,22 +148,24 @@ export default function Home() {
   const [level, setLevel] = useState<string>('easy');
   const [userInput, setuser] = useState<number[][]>(createBoard(difficult[level]));
   const [bomMap, setBom] = useState<number[][]>(createBoard(difficult[level]));
-  const [time, setTime] = useState<number>(0);
+  // const [time, setTime] = useState<number>(0);
+  const [customSetting, setCustom] = useState<level>(difficult.custom);
+  const customMemo = structuredClone(customSetting);
 
-  const timer = useCallback(() => {
-    setTime((prevTime) => prevTime + 1); // 関数形式のsetStateを使用
-  }, []);
+  // const timer = useCallback(() => {
+  //   setTime((prevTime) => prevTime + 1); // 関数形式のsetStateを使用
+  // }, []);
 
-  //timer
-  useEffect(() => {
-    const interval = setInterval(() => {
-      timer();
-    }, 1000);
+  // //timer
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     timer();
+  //   }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [timer]);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [timer]);
 
   const clickBoard: number[][] = structuredClone(userInput);
 
@@ -180,8 +182,24 @@ export default function Home() {
     setuser(createBoard(difficult[level]));
   }
 
-  const setCustomWidth = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
+  const setCustomChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name === 'width') {
+      customMemo.width = Number(value);
+    } else if (name === 'height') {
+      customMemo.height = Number(value);
+    } else {
+      customMemo.bomNumber = Number(value);
+    }
+    console.log(name);
+    console.log(value);
+    setCustom(customMemo);
+  };
+  const reloadustom = () => {
+    if (customMemo.width * customMemo.height < customMemo.bomNumber) {
+      customMemo.bomNumber = customMemo.height * customMemo.width;
+    }
+    setLevel('custom');
   };
 
   const clickHandler = (x: number, y: number) => {
@@ -194,7 +212,6 @@ export default function Home() {
     }
     setuser(clickBoard);
   };
-  console.log(clickBoard);
   const riteClick = (x: number, y: number) => {
     if (calcBoard[y][x] === -1 || calcBoard[y][x] === 9 || calcBoard[y][x] === 10) {
       clickBoard[y][x] = (clickBoard[y][x] - 1) % 3;
@@ -204,7 +221,7 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className="timer">{time}</div>
+      <div className="timer" />
       <div
         className={styles.face}
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
@@ -217,14 +234,32 @@ export default function Home() {
         <option value="custom">カスタム</option>
       </select>
       {level === 'custom' && (
-        <div>
-          <label htmlFor="setCustom">幅</label>
+        <div className="custom">
+          <label htmlFor="setW">幅</label>
           <input
-            id="setCustom"
+            id="setW"
             type="number"
-            value={difficult.custom.width}
-            onChange={setCustomWidth}
+            name="width"
+            value={customSetting.width}
+            onChange={setCustomChange}
           />
+          <label htmlFor="setH">高さ</label>
+          <input
+            id="setH"
+            type="number"
+            name="height"
+            value={customSetting.height}
+            onChange={setCustomChange}
+          />
+          <label htmlFor="setB">爆弾の数</label>
+          <input
+            id="setB"
+            type="number"
+            name="bomNumber"
+            value={customSetting.bomNumber}
+            onChange={setCustomChange}
+          />
+          <button onClick={reloadustom}>更新</button>
         </div>
       )}
       <div
