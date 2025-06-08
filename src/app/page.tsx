@@ -1,7 +1,7 @@
 'use client';
 
 import type { ChangeEvent } from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 const directions = [
@@ -148,24 +148,29 @@ export default function Home() {
   const [level, setLevel] = useState<string>('easy');
   const [userInput, setuser] = useState<number[][]>(createBoard(difficult[level]));
   const [bomMap, setBom] = useState<number[][]>(createBoard(difficult[level]));
-  // const [time, setTime] = useState<number>(0);
+  const [time, setTime] = useState<number>(0);
   const [customSetting, setCustom] = useState<level>(difficult.custom);
   const customMemo = structuredClone(customSetting);
 
-  // const timer = useCallback(() => {
-  //   setTime((prevTime) => prevTime + 1); // 関数形式のsetStateを使用
-  // }, []);
+  const timer = useCallback(() => {
+    setTime((prevTime) => prevTime + 1);
+  }, []);
 
-  // //timer
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     timer();
-  //   }, 1000);
+  //timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      timer();
+    }, 1000);
 
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [timer]);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timer]);
+
+  useEffect(() => {
+    setBom(createBoard(difficult[level]));
+    setuser(createBoard(difficult[level]));
+  }, [level]);
 
   const clickBoard: number[][] = structuredClone(userInput);
 
@@ -177,12 +182,7 @@ export default function Home() {
     setLevel(event.target.value);
   };
 
-  if (calcBoard[0].length !== createBoard(difficult[level])[0].length) {
-    setBom(createBoard(difficult[level]));
-    setuser(createBoard(difficult[level]));
-  }
-
-  const setCustomChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const setCustomValue = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name === 'width') {
       customMemo.width = Number(value);
@@ -190,21 +190,26 @@ export default function Home() {
       customMemo.height = Number(value);
     } else {
       customMemo.bomNumber = Number(value);
+      if (customMemo.width * customMemo.height < customMemo.bomNumber) {
+        customMemo.bomNumber = customMemo.height * customMemo.width;
+      }
     }
-    console.log(name);
-    console.log(value);
     setCustom(customMemo);
   };
-  const reloadustom = () => {
-    if (customMemo.width * customMemo.height < customMemo.bomNumber) {
-      customMemo.bomNumber = customMemo.height * customMemo.width;
-    }
-    setLevel('custom');
+  const reloadCustom = () => {
+    console.log(customSetting);
+    setBom(createBoard(customSetting));
+    setuser(createBoard(customSetting));
   };
 
   const clickHandler = (x: number, y: number) => {
+    console.log(bomMap);
     if (counter(bomMap, 1) === 0) {
-      setBom(putBom(userInput, y, x, difficult[level].bomNumber));
+      if (level === 'custom') {
+        setBom(putBom(userInput, y, x, customSetting.bomNumber));
+      } else {
+        setBom(putBom(userInput, y, x, difficult[level].bomNumber));
+      }
     }
     clickBoard[y][x] = 1;
     if (bomMap[y][x] === 1) {
@@ -221,7 +226,7 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className="timer" />
+      <div className="timer">{time}</div>
       <div
         className={styles.face}
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
@@ -241,7 +246,7 @@ export default function Home() {
             type="number"
             name="width"
             value={customSetting.width}
-            onChange={setCustomChange}
+            onChange={setCustomValue}
           />
           <label htmlFor="setH">高さ</label>
           <input
@@ -249,7 +254,7 @@ export default function Home() {
             type="number"
             name="height"
             value={customSetting.height}
-            onChange={setCustomChange}
+            onChange={setCustomValue}
           />
           <label htmlFor="setB">爆弾の数</label>
           <input
@@ -257,9 +262,9 @@ export default function Home() {
             type="number"
             name="bomNumber"
             value={customSetting.bomNumber}
-            onChange={setCustomChange}
+            onChange={setCustomValue}
           />
-          <button onClick={reloadustom}>更新</button>
+          <button onClick={reloadCustom}>更新</button>
         </div>
       )}
       <div
