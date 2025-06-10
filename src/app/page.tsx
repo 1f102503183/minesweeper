@@ -154,7 +154,6 @@ export default function Home() {
   const [bomMap, setBom] = useState<number[][]>(createBoard(difficult[level]));
   const [time, setTime] = useState<number>(0);
   const [customSetting, setCustom] = useState<level>(difficult.custom);
-  const customMemo = structuredClone(customSetting);
 
   const timer = useCallback(() => {
     setTime((prevTime) => prevTime + 1);
@@ -187,32 +186,38 @@ export default function Home() {
   };
 
   const setCustomValue = (event: ChangeEvent<HTMLInputElement>) => {
+    const customMemo = structuredClone(customSetting);
     const { name, value } = event.target;
-    if (name === 'width') {
-      customMemo.width = Number(value);
+    if (Number(value) < 1) {
+      alert('値は0以上である必要があります。');
+      return;
+    } else if (name === 'width') {
+      customMemo.width = Math.abs(Number(value));
     } else if (name === 'height') {
-      customMemo.height = Number(value);
+      customMemo.height = Math.abs(Number(value));
     } else {
-      customMemo.bomNumber = Number(value);
-      if (customMemo.width * customMemo.height < customMemo.bomNumber) {
-        customMemo.bomNumber = customMemo.height * customMemo.width;
-      }
+      customMemo.bomNumber = Math.abs(Number(value));
+    }
+    if (customMemo.width * customMemo.height < customMemo.bomNumber) {
+      customMemo.bomNumber = customMemo.height * customMemo.width;
     }
     setCustom(customMemo);
   };
   const reloadCustom = () => {
-    console.log(customSetting);
     setBom(createBoard(customSetting));
     setuser(createBoard(customSetting));
   };
 
   const reset = () => {
-    setBom(createBoard(difficult[level]));
-    setuser(createBoard(difficult[level]));
+    if (level === 'custom') {
+      reloadCustom();
+    } else {
+      setBom(createBoard(difficult[level]));
+      setuser(createBoard(difficult[level]));
+    }
   };
 
   const clickHandler = (x: number, y: number) => {
-    console.log(bomMap);
     if (counter(bomMap, 1) === 0) {
       if (level === 'custom') {
         setBom(putBom(userInput, y, x, customSetting.bomNumber));
@@ -239,7 +244,7 @@ export default function Home() {
       <div
         className={styles.face}
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
-        onClick={() => reset}
+        onClick={reset}
       />
       <select id="levelSelect" value={level} onChange={setLev}>
         <option value="easy">初級</option>
