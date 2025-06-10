@@ -132,9 +132,13 @@ const putBom = (Map: number[][], y: number, x: number, bomnumber: number): numbe
   const b = Math.floor(Math.random() * Map[0].length);
   if (counter(Map, 1) === bomnumber) {
     return Map;
+  } else if (Map.length * Map[0].length === bomnumber) {
+    Map[y][x] = 1;
   }
-  if (Map[a][b] !== 1 && a !== y && b !== x) {
-    Map[a][b] = 1;
+  if (Map[a][b] !== 1) {
+    if ((a === y && b === x) !== true) {
+      Map[a][b] = 1;
+    }
   }
   return putBom(Map, y, x, bomnumber);
 };
@@ -202,6 +206,11 @@ export default function Home() {
     setuser(createBoard(customSetting));
   };
 
+  const reset = () => {
+    setBom(createBoard(difficult[level]));
+    setuser(createBoard(difficult[level]));
+  };
+
   const clickHandler = (x: number, y: number) => {
     console.log(bomMap);
     if (counter(bomMap, 1) === 0) {
@@ -230,7 +239,7 @@ export default function Home() {
       <div
         className={styles.face}
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
-        // onClick={() => setLev(level)}
+        onClick={() => reset}
       />
       <select id="levelSelect" value={level} onChange={setLev}>
         <option value="easy">初級</option>
