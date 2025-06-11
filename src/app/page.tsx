@@ -156,8 +156,10 @@ export default function Home() {
   const [customSetting, setCustom] = useState<level>(difficult.custom);
 
   const timer = useCallback(() => {
-    setTime((prevTime) => prevTime + 1);
-  }, []);
+    if (counter(userInput, 1) !== 0) {
+      setTime((prevTime) => prevTime + 1);
+    }
+  }, [userInput]);
 
   //timer
   useEffect(() => {
@@ -183,6 +185,7 @@ export default function Home() {
 
   const setLev = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setLevel(event.target.value);
+    setTime(0);
   };
 
   const setCustomValue = (event: ChangeEvent<HTMLInputElement>) => {
@@ -203,18 +206,16 @@ export default function Home() {
     }
     setCustom(customMemo);
   };
-  const reloadCustom = () => {
-    setBom(createBoard(customSetting));
-    setuser(createBoard(customSetting));
-  };
 
   const reset = () => {
     if (level === 'custom') {
-      reloadCustom();
+      setBom(createBoard(customSetting));
+      setuser(createBoard(customSetting));
     } else {
       setBom(createBoard(difficult[level]));
       setuser(createBoard(difficult[level]));
     }
+    setTime(0);
   };
 
   const clickHandler = (x: number, y: number) => {
@@ -278,7 +279,7 @@ export default function Home() {
             value={customSetting.bomNumber}
             onChange={setCustomValue}
           />
-          <button onClick={reloadCustom}>更新</button>
+          <button onClick={reset}>更新</button>
         </div>
       )}
       <div
