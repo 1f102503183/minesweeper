@@ -155,11 +155,20 @@ export default function Home() {
   const [time, setTime] = useState<number>(0);
   const [customSetting, setCustom] = useState<level>(difficult.custom);
 
+  const clickBoard: number[][] = structuredClone(userInput);
+
+  const calcBoard = integBoard(clickBoard, serch(bomMap));
+
+  const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
+
   const timer = useCallback(() => {
-    if (counter(userInput, 1) !== 0) {
+    if (
+      counter(calcBoard, -1) !== 0 &&
+      counter(calcBoard, -1) !== calcBoard.length * calcBoard[0].length
+    ) {
       setTime((prevTime) => prevTime + 1);
     }
-  }, [userInput]);
+  }, [calcBoard]);
 
   //timer
   useEffect(() => {
@@ -176,12 +185,6 @@ export default function Home() {
     setBom(createBoard(difficult[level]));
     setuser(createBoard(difficult[level]));
   }, [level]);
-
-  const clickBoard: number[][] = structuredClone(userInput);
-
-  const calcBoard = integBoard(clickBoard, serch(bomMap));
-
-  const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
 
   const setLev = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setLevel(event.target.value);
