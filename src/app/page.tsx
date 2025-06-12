@@ -147,6 +147,10 @@ const counter = (bord: number[][], item: number): number => {
   return bord.flat().filter((i) => i === item).length;
 };
 
+// const flagAndBom = (Bmap: number[], UserMap: number[][]) => {
+
+// };
+
 export default function Home() {
   // 1~8=number,11=bom, 9=?,10=flag
   const [level, setLevel] = useState<string>('easy');
@@ -160,6 +164,12 @@ export default function Home() {
   const calcBoard = integBoard(clickBoard, serch(bomMap));
 
   const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
+
+  const score: number = Math.max(
+    0,
+    bomMap.flat().filter((userValue) => userValue === 1).length -
+      userInput.flat().filter((userValue) => userValue === -1).length,
+  );
 
   const timer = useCallback(() => {
     if (
@@ -235,6 +245,7 @@ export default function Home() {
     }
     setuser(clickBoard);
   };
+
   const riteClick = (x: number, y: number) => {
     if (calcBoard[y][x] === -1 || calcBoard[y][x] === 9 || calcBoard[y][x] === 10) {
       clickBoard[y][x] = (clickBoard[y][x] - 1) % 3;
@@ -250,6 +261,7 @@ export default function Home() {
         style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
         onClick={reset}
       />
+      <div>{score}</div>
       <select id="levelSelect" value={level} onChange={setLev}>
         <option value="easy">初級</option>
         <option value="normal">中級</option>
