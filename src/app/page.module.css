@@ -8,36 +8,95 @@
   padding: 0 0.5rem;
 }
 
-.time {
-  width: 60px;
-  height: 30px;
-  border: 3px solid #000;
+.back {
+  display: flex;
+  flex-flow: column nowrap;
+  width: fit-content;
+  height: fit-content;
+  background-color: #999;
+  border-top: 5px solid #fff;
+  border-right: 5px solid #000;
+  border-bottom: 5px solid #000;
+  border-left: 5px solid #fff;
+  box-shadow: 15px 10px 1px #000;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  height: fit-content;
+  padding: 5px;
+  margin: 10px;
+  font-size: 30px;
+  color: red;
+  background-color: #999;
+  border-top: 5px solid #000;
+  border-right: 5px solid #fff;
+  border-bottom: 5px solid #fff;
+  border-left: 5px solid #000;
+}
+
+.counter {
+  justify-content: space-between;
+  width: 90px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #000;
+  border-top: 2px solid #000;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  border-left: 2px solid #000;
 }
 
 .face {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
+  margin: auto;
   background: url('~/src/assets/images/icons.png') no-repeat;
-  border: 3px solid #000;
+  background-color: #999;
+  border-top: 5px solid #fff;
+  border-right: 5px solid #000;
+  border-bottom: 5px solid #000;
+  border-left: 5px solid#fff;
 }
 
-.back {
+.bord {
   display: flex;
   flex-wrap: wrap;
-  background-color: #777;
+  width: fit-content;
+  height: fit-content;
+  margin: 10px;
+  background-color: #999;
+  border-top: 5px solid #000;
+  border-right: 5px solid #fff;
+  border-bottom: 5px solid #fff;
+  border-left: 5px solid #000;
 }
 
 .cover {
   width: 30px;
   height: 30px;
-  background-color: #888;
-  border: 3px outset #000;
+  background-color: #999;
+  border-top: 5px solid #fff;
+  border-right: 5px solid #000;
+  border-bottom: 5px solid #000;
+  border-left: 5px solid #fff;
 }
 
 .block {
   width: 30px;
   height: 30px;
   background: url('~/src/assets/images/icons.png') no-repeat;
-  background-color: #888;
-  border: 3px solid #000;
+  border: 2px solid #000;
+}
+
+.flag {
+  width: 30px;
+  height: 30px;
+  background: url('~/src/assets/images/icons.png') no-repeat;
+  background-size: auto 20px;
+  border-top: 5px solid #fff;
+  border-right: 5px solid #000;
+  border-bottom: 5px solid #000;
+  border-left: 5px solid #fff;
 }

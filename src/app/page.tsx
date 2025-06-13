@@ -255,13 +255,6 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className="timer">{time}</div>
-      <div
-        className={styles.face}
-        style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
-        onClick={reset}
-      />
-      <div>{score}</div>
       <select id="levelSelect" value={level} onChange={setLev}>
         <option value="easy">初級</option>
         <option value="normal">中級</option>
@@ -297,31 +290,50 @@ export default function Home() {
           <button onClick={reset}>更新</button>
         </div>
       )}
-      <div
-        className={styles.back}
-        style={{ height: `${userInput.length * 30}px`, width: `${userInput[0].length * 30}px` }}
-      >
-        {calcBoard.map((row, y) =>
-          row.map((state, x) => (
-            <div
-              className={styles.cover}
-              key={`${x}-${y}`}
-              onClick={() => clickHandler(x, y)}
-              onContextMenu={(evt) => {
-                evt.preventDefault();
-                riteClick(x, y);
-              }}
-            >
-              {state !== -1 && (
-                <div
-                  className={styles.block}
-                  key={`${x}-${y}`}
-                  style={{ backgroundPosition: `${-30 * (state - 1)}px` }}
-                />
-              )}
-            </div>
-          )),
-        )}
+      <div className={styles.back}>
+        <div className={styles.header} style={{ width: `${userInput[0].length * 30 + 10}px` }}>
+          <span className={styles.counter}>{score}</span>
+          <span
+            className={styles.face}
+            style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
+            onClick={reset}
+          />
+          <span className={styles.counter}>{time}</span>
+        </div>
+        <div
+          className={styles.bord}
+          style={{
+            height: `${userInput.length * 30 + 10}px`,
+            width: `${userInput[0].length * 30 + 10}px`,
+          }}
+        >
+          {calcBoard.map((row, y) =>
+            row.map((state, x) => (
+              <div
+                className={
+                  state === -1
+                    ? styles.cover
+                    : state === 9 || state === 10
+                      ? styles.flag
+                      : styles.block
+                }
+                style={{
+                  backgroundPosition:
+                    state === 10 || state === 9
+                      ? `${-20 * (state - 1)}px`
+                      : `${-30 * (state - 1)}px`,
+                  backgroundColor: state === 11 ? '#ff0000' : '#888',
+                }}
+                key={`${x}-${y}`}
+                onClick={() => clickHandler(x, y)}
+                onContextMenu={(evt) => {
+                  evt.preventDefault();
+                  riteClick(x, y);
+                }}
+              />
+            )),
+          )}
+        </div>
       </div>
     </div>
   );
