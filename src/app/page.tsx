@@ -163,7 +163,7 @@ export default function Home() {
 
   const calcBoard = integBoard(clickBoard, serch(bomMap));
 
-  const face: number = counter(userInput, 0) === 0 ? 14 : counter(calcBoard, -1) === 0 ? 13 : 12;
+  const face: number = 14;
 
   const score: number = Math.max(
     0,
@@ -239,9 +239,11 @@ export default function Home() {
         setBom(putBom(userInput, y, x, difficult[level].bomNumber));
       }
     }
-    clickBoard[y][x] = 1;
-    if (bomMap[y][x] === 1) {
-      gameover(clickBoard);
+    if (userInput[y][x] === 0) {
+      clickBoard[y][x] = 1;
+      if (bomMap[y][x] === 1) {
+        gameover(clickBoard);
+      }
     }
     setuser(clickBoard);
   };
