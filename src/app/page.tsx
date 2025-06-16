@@ -88,7 +88,9 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
         board[y][x] = incNum[y][x];
       }
       if (cBoard[y][x] === -1 || cBoard[y][x] === -2) {
-        board[y][x] = 11 + cBoard[y][x];
+        if (board[y][x] === -1) {
+          board[y][x] = 11 + cBoard[y][x];
+        }
       }
     }
   }
