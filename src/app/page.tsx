@@ -77,6 +77,8 @@ const integBoard = (cBoard: number[][], incNum: number[][]): number[][] => {
   for (let y = 0; y < cBoard.length; y++) {
     for (let x = 0; x < cBoard[y].length; x++) {
       if (cBoard[y][x] === 1) {
+        gameover(board, incNum);
+      } else {
         openZero(cBoard, incNum, board, y, x);
         board[y][x] = incNum[y][x];
       }
@@ -122,9 +124,9 @@ const openZero = (
 };
 
 // ゲームオーバー
-const gameover = (board: number[][]): number[][] => {
+const gameover = (board: number[][], incNum: number[][]): number[][] => {
   for (let i = 0; i < board.length; i++) {
-    board[i].fill(1);
+    board[i].map((value: number, index: number) => (incNum[i][index] === 11 ? 0 : -1));
   }
   return board;
 };
@@ -149,9 +151,9 @@ const counter = (bord: number[][], item: number): number => {
   return bord.flat().filter((i) => i === item).length;
 };
 
-// const flagAndBom = (Bmap: number[], UserMap: number[][]) => {
-
-// };
+// const checkGameState = (calcBoard:number[][]) =>{
+//   calcBoard.flat().filter((value,index)=> value === -1).length
+// }
 
 export default function Home() {
   // 1~8=number,11=bom, 9=?,10=flag
@@ -165,13 +167,13 @@ export default function Home() {
 
   const calcBoard = integBoard(clickBoard, serch(bomMap));
 
-  const face: number = 14;
+  const face: number = 13;
 
-  const score: number = Math.max(
-    0,
-    bomMap.flat().filter((userValue) => userValue === 1).length -
-      userInput.flat().filter((userValue) => userValue === -1).length,
-  );
+  // const score: number = Math.max(
+  //   0,
+  //   bomMap.flat().filter((bomValue) => bomValue === 1).length -
+  //     userInput.flat().filter((userValue) => userValue === -1).length,
+  // );
 
   const timer = useCallback(() => {
     if (
@@ -243,14 +245,11 @@ export default function Home() {
     }
     if (userInput[y][x] === 0) {
       clickBoard[y][x] = 1;
-      if (bomMap[y][x] === 1) {
-        gameover(clickBoard);
-      }
     }
     setuser(clickBoard);
   };
 
-  const riteClick = (x: number, y: number) => {
+  const rightClick = (x: number, y: number) => {
     if (calcBoard[y][x] === -1 || calcBoard[y][x] === 9 || calcBoard[y][x] === 10) {
       clickBoard[y][x] = (clickBoard[y][x] - 1) % 3;
       setuser(clickBoard);
@@ -296,7 +295,10 @@ export default function Home() {
       )}
       <div className={styles.back}>
         <div className={styles.header} style={{ width: `${userInput[0].length * 30 + 10}px` }}>
-          <span className={styles.counter}>{score}</span>
+          <span className={styles.counter}>
+            {bomMap.flat().filter((bomValue) => bomValue === 1).length -
+              userInput.flat().filter((userValue) => userValue === -1).length}
+          </span>
           <span
             className={styles.face}
             style={{ backgroundPosition: `${-30 * (face - 1)}px` }}
@@ -332,7 +334,7 @@ export default function Home() {
                 onClick={() => clickHandler(x, y)}
                 onContextMenu={(evt) => {
                   evt.preventDefault();
-                  riteClick(x, y);
+                  rightClick(x, y);
                 }}
               />
             )),
@@ -342,5 +344,3 @@ export default function Home() {
     </div>
   );
 }
-
-// outset
